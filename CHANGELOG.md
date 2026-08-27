@@ -1,5 +1,20 @@
-<!-- Keep a Changelog guide -> https://keepachangelog.com -->
-
-# Quick-notes-plugin Changelog
+# Global Notes Changelog
 
 ## [Unreleased]
+
+## [1.0.1] - 2026-08-27
+
+### Fixed
+
+- Made the active-note indicator clearly visible in the notes menu in both light and dark themes.
+
+## [1.0.0] - 2026-08-27
+
+### Added
+
+- Persistent notes shared across projects in the IDE.
+- Multiple named notes with one active note available for editing.
+- Note creation, selection, renaming, and deletion.
+- Automatic saving of note text and the active-note selection.
+- Theme-aware editor colors, caret, selection, and note header.
+- Light and dark plugin logos and tool-window icons.

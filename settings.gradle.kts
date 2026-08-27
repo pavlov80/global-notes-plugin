@@ -1,6 +1,8 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
 
-rootProject.name = "quick-notes-plugin"
+rootProject.name = "global-notes-plugin"
 
 pluginManagement {
     plugins {

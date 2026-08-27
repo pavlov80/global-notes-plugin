@@ -1,31 +1,26 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
     <id>com.spavlov.globalnotes</id>
-
-    <!-- Public plugin name should be written in Title Case.
-     Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
     <name>Global Notes</name>
-
-    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor url="https://www.thinktankbg.com">ThinkTankBG</vendor>
-
-    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        A simple global notes tool window.
-        ]]></description>
-
-    <!-- Product and plugin compatibility requirements.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+        <p>
+            Keep persistent notes available across projects directly inside your JetBrains IDE.
+            Global Notes provides a lightweight writing area that saves changes automatically.
+        </p>
+        <ul>
+            <li>Create and manage multiple named notes.</li>
+            <li>Select one active note for focused editing.</li>
+            <li>Rename or delete notes from a compact header menu.</li>
+            <li>Use theme-aware colors in light and dark IDE themes.</li>
+        </ul>
+        <p>
+            All note content remains local. The plugin does not require an account or transmit data.
+        </p>
+    ]]></description>
     <depends>com.intellij.modules.platform</depends>
-
     <resource-bundle>messages.MyMessageBundle</resource-bundle>
-
-    <!-- Extensions defined by the plugin.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow 
+        <toolWindow
             id="Global Notes"
             factoryClass="com.spavlov.globalnotes.NotesToolWindowFactory"
             icon="/icons/previewVertically.svg"

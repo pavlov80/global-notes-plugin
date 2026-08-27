@@ -22,12 +22,10 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.Insets
 import javax.swing.BorderFactory
-import javax.swing.ButtonGroup
 import javax.swing.JButton
 import javax.swing.JMenuItem
 import javax.swing.JPanel
 import javax.swing.JPopupMenu
-import javax.swing.JRadioButtonMenuItem
 import javax.swing.JSeparator
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
@@ -98,10 +96,12 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
 
         fun showNotesMenu(anchor: Component) {
             val menu = JPopupMenu()
-            val group = ButtonGroup()
             notesService.notes.forEach { note ->
-                val item = JRadioButtonMenuItem(note.name, note.id == notesService.selectedNoteId)
-                group.add(item)
+                val item = JMenuItem(note.name).apply {
+                    if (note.id == notesService.selectedNoteId) {
+                        icon = AllIcons.Actions.Checked
+                    }
+                }
                 item.addActionListener {
                     notesService.selectNote(note.id)
                     refreshEditor()
