@@ -16,11 +16,11 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.content.ContentFactory
+import com.intellij.util.ui.JBUI
+import com.intellij.util.ui.UIUtil
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Component
-import java.awt.Dimension
-import java.awt.Insets
 import javax.swing.BorderFactory
 import javax.swing.JButton
 import javax.swing.JMenuItem
@@ -47,24 +47,24 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
         }
         val notesButton = JButton(AllIcons.General.ChevronDown).apply {
             toolTipText = "Choose, add, rename, or delete a note"
-            margin = Insets(0, 0, 0, 0)
+            margin = JBUI.insets(6)
             isContentAreaFilled = false
             isFocusPainted = false
             isOpaque = false
-            preferredSize = Dimension(24, 24)
-            minimumSize = Dimension(24, 24)
-            maximumSize = Dimension(24, 24)
+            preferredSize = JBUI.size(36, 32)
+            minimumSize = JBUI.size(36, 32)
+            maximumSize = JBUI.size(36, 32)
         }
         val header = JPanel(BorderLayout()).apply {
             add(selectedNoteLabel, BorderLayout.CENTER)
             add(notesButton, BorderLayout.EAST)
-            border = BorderFactory.createEmptyBorder(2, 0, 2, 0)
+            border = JBUI.Borders.empty(4, 0, 4, 8)
         }
 
         fun updateHeaderAppearance() {
             val isDarkTheme = !JBColor.isBright()
             selectedNoteLabel.foreground = if (isDarkTheme) Color(180, 224, 189) else Color(36, 88, 49)
-            header.background = if (isDarkTheme) Color(45, 61, 49) else Color(234, 246, 234)
+            header.background = UIUtil.getTreeBackground()
             header.repaint()
         }
 
@@ -75,7 +75,7 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
             )
             textArea.font = editorFont
             textArea.foreground = editorScheme.defaultForeground
-            textArea.background = editorScheme.defaultBackground
+            textArea.background = UIUtil.getTreeBackground()
             textArea.caretColor = editorScheme.getColor(EditorColors.CARET_COLOR)
                 ?: editorScheme.defaultForeground
             editorScheme.getColor(EditorColors.SELECTION_BACKGROUND_COLOR)?.let {
@@ -96,6 +96,17 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
 
         fun showNotesMenu(anchor: Component) {
             val menu = JPopupMenu()
+
+            fun addMenuItem(item: JMenuItem) {
+                // Preserve the IDE's menu font and colors while providing a larger,
+                // consistently scaled target for every action.
+                item.border = BorderFactory.createCompoundBorder(
+                    item.border,
+                    JBUI.Borders.empty(5, 10)
+                )
+                menu.add(item)
+            }
+
             notesService.notes.forEach { note ->
                 val item = JMenuItem(note.name).apply {
                     if (note.id == notesService.selectedNoteId) {
@@ -106,7 +117,7 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
                     notesService.selectNote(note.id)
                     refreshEditor()
                 }
-                menu.add(item)
+                addMenuItem(item)
             }
 
             menu.add(JSeparator())
@@ -120,7 +131,7 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
                     refreshEditor()
                 }
             }
-            menu.add(addItem)
+            addMenuItem(addItem)
 
             val renameItem = JMenuItem("Rename current note…")
             renameItem.addActionListener {
@@ -132,7 +143,7 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
                     refreshEditor()
                 }
             }
-            menu.add(renameItem)
+            addMenuItem(renameItem)
 
             val deleteItem = JMenuItem("Delete current note")
             deleteItem.isEnabled = notesService.notes.size > 1
@@ -149,7 +160,7 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
                     refreshEditor()
                 }
             }
-            menu.add(deleteItem)
+            addMenuItem(deleteItem)
             menu.show(anchor, 0, anchor.height)
         }
 
@@ -179,6 +190,7 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
         val panel = JPanel(BorderLayout()).apply {
             add(headerWithSeparator, BorderLayout.NORTH)
             add(scrollPane, BorderLayout.CENTER)
+            background = UIUtil.getTreeBackground()
         }
 
         val content = ContentFactory.getInstance().createContent(panel, "", false).apply {
@@ -188,6 +200,8 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
         ApplicationManager.getApplication().messageBus.connect(content).subscribe(LafManagerListener.TOPIC, LafManagerListener {
             updateTextAreaAppearance()
             updateHeaderAppearance()
+            panel.background = UIUtil.getTreeBackground()
+            panel.repaint()
         })
     }
 }

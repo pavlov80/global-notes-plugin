@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-08-31
+
+### Changed
+
+- Increased the notes-menu action spacing and dropdown-button hit area.
+- Matched the notes tool window background to the active IDE theme's Project-tree background.
+
 ## [1.0.1] - 2026-08-27
 
 ### Fixed
