@@ -13,13 +13,7 @@ Global Notes is an IntelliJ Platform plugin that provides a persistent, IDE-wide
 
 ## Screenshots
 
-### Dark theme
-
-![Global Notes tool window in the dark theme](docs/images/global-notes-overview-dark.png)
-
-### Light theme
-
-![Global Notes tool window in the light theme](docs/images/global-notes-overview-light.png)
+![Global Notes tool window in the dark theme](docs/images/global-notes-overview.png)
 
 ## Using the plugin
 
