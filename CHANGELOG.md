@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-09-02
+
+### Fixed
+
+- Made Tab indent multi-line selections instead of replacing the selected text; Shift+Tab now outdents them.
+- Made the notes menu close when its chevron button is clicked again.
+- Removed compiler-generated references to deprecated and experimental `ToolWindowFactory` compatibility methods.
+
 ## [1.0.2] - 2026-08-31
 
 ### Changed

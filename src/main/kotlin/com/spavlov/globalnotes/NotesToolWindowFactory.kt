@@ -21,14 +21,24 @@ import com.intellij.util.ui.UIUtil
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Component
+import java.awt.EventQueue
+import java.awt.event.ActionEvent
+import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
+import java.awt.event.MouseEvent
+import javax.swing.AbstractAction
 import javax.swing.BorderFactory
 import javax.swing.JButton
+import javax.swing.JComponent
 import javax.swing.JMenuItem
 import javax.swing.JPanel
 import javax.swing.JPopupMenu
 import javax.swing.JSeparator
+import javax.swing.KeyStroke
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
+import javax.swing.event.PopupMenuEvent
+import javax.swing.event.PopupMenuListener
 
 class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
 
@@ -40,6 +50,65 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
             lineWrap = true
             wrapStyleWord = true
             border = BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        }
+
+        fun changeLineIndent(outdent: Boolean) {
+            val selectionStart = textArea.selectionStart
+            val selectionEnd = textArea.selectionEnd
+
+            if (!outdent && selectionStart == selectionEnd) {
+                textArea.replaceSelection("\t")
+                return
+            }
+
+            val text = textArea.text
+            val blockStart = if (selectionStart == 0) {
+                0
+            } else {
+                text.lastIndexOf('\n', selectionStart - 1).let { if (it < 0) 0 else it + 1 }
+            }
+            val blockEnd = if (selectionStart == selectionEnd) {
+                text.indexOf('\n', selectionEnd).let { if (it < 0) text.length else it }
+            } else {
+                selectionEnd
+            }
+            val block = text.substring(blockStart, blockEnd)
+            val transformed = if (outdent) {
+                block.replace(Regex("(?m)^(?:\\t| {1,4})"), "")
+            } else {
+                buildString(block.length + 8) {
+                    var atLineStart = true
+                    block.forEach { character ->
+                        if (atLineStart) append('\t')
+                        append(character)
+                        atLineStart = character == '\n'
+                    }
+                }
+            }
+
+            textArea.replaceRange(transformed, blockStart, blockEnd)
+            if (selectionStart == selectionEnd) {
+                val removedCharacters = block.length - transformed.length
+                textArea.caretPosition = (selectionStart - removedCharacters).coerceAtLeast(blockStart)
+            } else {
+                textArea.select(blockStart, blockStart + transformed.length)
+            }
+        }
+
+        textArea.getInputMap(JComponent.WHEN_FOCUSED).apply {
+            put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "indent-selected-lines")
+            put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK),
+                "outdent-selected-lines"
+            )
+        }
+        textArea.actionMap.apply {
+            put("indent-selected-lines", object : AbstractAction() {
+                override fun actionPerformed(event: ActionEvent) = changeLineIndent(outdent = false)
+            })
+            put("outdent-selected-lines", object : AbstractAction() {
+                override fun actionPerformed(event: ActionEvent) = changeLineIndent(outdent = true)
+            })
         }
 
         val selectedNoteLabel = JBLabel().apply {
@@ -94,8 +163,32 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
             selectedNoteLabel.text = notesService.selectedNote.name
         }
 
+        var notesMenu: JPopupMenu? = null
+        var suppressNextMenuOpen = false
+
+        fun currentMouseEventTargetsNotesButton(): Boolean {
+            val event = EventQueue.getCurrentEvent() as? MouseEvent ?: return false
+            if (!notesButton.isShowing) return false
+            val buttonLocation = notesButton.locationOnScreen
+            return event.xOnScreen >= buttonLocation.x &&
+                event.xOnScreen < buttonLocation.x + notesButton.width &&
+                event.yOnScreen >= buttonLocation.y &&
+                event.yOnScreen < buttonLocation.y + notesButton.height
+        }
+
         fun showNotesMenu(anchor: Component) {
             val menu = JPopupMenu()
+            notesMenu = menu
+            menu.addPopupMenuListener(object : PopupMenuListener {
+                override fun popupMenuWillBecomeVisible(event: PopupMenuEvent) = Unit
+
+                override fun popupMenuWillBecomeInvisible(event: PopupMenuEvent) {
+                    suppressNextMenuOpen = currentMouseEventTargetsNotesButton()
+                    if (notesMenu === menu) notesMenu = null
+                }
+
+                override fun popupMenuCanceled(event: PopupMenuEvent) = Unit
+            })
 
             fun addMenuItem(item: JMenuItem) {
                 // Preserve the IDE's menu font and colors while providing a larger,
@@ -164,7 +257,16 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
             menu.show(anchor, 0, anchor.height)
         }
 
-        notesButton.addActionListener { showNotesMenu(notesButton) }
+        notesButton.addActionListener {
+            val currentMenu = notesMenu
+            if (currentMenu == null && !suppressNextMenuOpen) {
+                showNotesMenu(notesButton)
+            } else {
+                currentMenu?.isVisible = false
+                notesMenu = null
+            }
+            suppressNextMenuOpen = false
+        }
 
         textArea.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(event: DocumentEvent) = save()

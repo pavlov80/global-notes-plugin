@@ -9,6 +9,7 @@ Global Notes is an IntelliJ Platform plugin that provides a persistent, IDE-wide
 - Add, rename, select, and delete notes from the menu in the note header.
 - Automatically save note content and the active-note selection.
 - Keep notes globally available across projects and IDE restarts.
+- Indent selected lines with **Tab** and move them back with **Shift+Tab**.
 - Use editor-theme-aware colors, font, and background for a comfortable writing area in both light and dark themes.
 
 ## Screenshots
