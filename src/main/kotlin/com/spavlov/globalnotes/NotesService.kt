@@ -25,7 +25,8 @@ class NotesService : PersistentStateComponent<NotesService.NotesState> {
     data class NoteState(
         var id: String = "",
         var name: String = "",
-        var text: String = ""
+        var text: String = "",
+        var lastUsedAt: Long = 0
     )
 
     init {
@@ -33,12 +34,13 @@ class NotesService : PersistentStateComponent<NotesService.NotesState> {
     }
 
     val notes: List<NoteState>
-        get() = notesState.notes
+        get() = notesState.notes.sortedByDescending { it.lastUsedAt }
 
     var selectedNoteId: String
         get() = notesState.selectedNoteId
         private set(value) {
             notesState.selectedNoteId = value
+            markNoteUsed(value)
         }
 
     val selectedNote: NoteState
@@ -92,6 +94,13 @@ class NotesService : PersistentStateComponent<NotesService.NotesState> {
         } else if (notesState.notes.none { it.id == notesState.selectedNoteId }) {
             notesState.selectedNoteId = notesState.notes.first().id
         }
+        markNoteUsed(notesState.selectedNoteId)
+    }
+
+    private fun markNoteUsed(id: String) {
+        val note = notesState.notes.firstOrNull { it.id == id } ?: return
+        val mostRecentUse = notesState.notes.maxOfOrNull { it.lastUsedAt } ?: 0
+        note.lastUsedAt = maxOf(System.currentTimeMillis(), mostRecentUse + 1)
     }
 
     private fun newId(): String = java.util.UUID.randomUUID().toString()

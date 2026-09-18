@@ -1,6 +1,10 @@
 # Global Notes Changelog
 
-## [Unreleased]
+## [1.0.4] - 2026-09-18
+
+### Changed
+
+- Sorted the notes menu by most recently used, with the active note first.
 
 ## [1.0.3] - 2026-09-02
 
