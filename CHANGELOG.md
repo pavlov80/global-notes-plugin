@@ -1,5 +1,21 @@
 # Global Notes Changelog
 
+## [1.1.0] - 2026-10-22
+
+### Added
+
+- Search within the current note, with case-insensitive matching, highlighted results, and an active match that stays visible while the search field has focus.
+- A single-row search bar with a match counter that stays the same width while navigating results.
+- Previous/next result navigation with wraparound using left/right arrow buttons, Enter/Shift+Enter, or F3/Shift+F3.
+- Open search with the IDE's Find shortcut or the header search button; close it with Escape or by clicking the search button again.
+- Live search updates when editing text or switching notes.
+
+### Changed
+
+- Matched the header button widths to the search navigation buttons.
+- Replaced hard-coded note-title colors with the IDE's label color, bold font, and panel background.
+- Simplified the README to focus on the main features.
+
 ## [1.0.4] - 2026-09-18
 
 ### Changed

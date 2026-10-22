@@ -9,7 +9,7 @@
         </p>
         <ul>
             <li>Create and manage multiple named notes.</li>
-            <li>Select one active note for focused editing.</li>
+            <li>Search within the current note.</li>
             <li>Rename or delete notes from a compact header menu.</li>
             <li>Use theme-aware colors in light and dark IDE themes.</li>
         </ul>

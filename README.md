@@ -1,68 +1,31 @@
-# Global Notes
+﻿# Global Notes
 
-Global Notes is an IntelliJ Platform plugin that provides a persistent, IDE-wide notes tool window. Keep reminders, working notes, project context, and other text available without leaving the IDE.
+Keep notes, reminders, and project context inside your JetBrains IDE, available across projects and IDE restarts.
+
+- Small tools should stay simple
+- Good defaults make a difference
 
 ## Features
 
-- Create and maintain multiple named notes.
-- Select one active note to edit at a time.
-- Add, rename, select, and delete notes from the menu in the note header.
-- Automatically save note content and the active-note selection.
-- Keep notes globally available across projects and IDE restarts.
-- Indent selected lines with **Tab** and move them back with **Shift+Tab**.
-- Use editor-theme-aware colors, font, and background for a comfortable writing area in both light and dark themes.
+- Create, rename, and delete multiple named notes.
+- Save changes automatically.
+- Search within the current note.
+- Follow the IDE's light and dark themes.
+- Store everything locally, with no account or data collection.
 
-## Screenshots
+Open **Global Notes** from the right-hand tool-window bar. Start writing, or use the header menu to manage your notes.
 
-![Global Notes tool window in the dark theme](docs/images/global-notes-overview.png)
+![Global Notes in the dark theme](docs/images/plugin-dark-theme.png)
 
-## Using the plugin
-
-1. Open the **Global Notes** tool window from the right-hand tool-window bar.
-2. Write in the active note; changes save automatically.
-3. Click the chevron button on the right side of the note header to choose or manage notes.
-4. Select **Add note...** to create a note, **Rename current note...** to rename it, or **Delete current note** to remove it.
-
-At least one note is always kept, so there is always an active place to write.
-
-## Data and privacy
-
-Notes are stored locally in the IDE configuration using the IntelliJ Platform persistence API. Global Notes does not require an account and does not collect, transmit, or share note content or telemetry.
+![Global Notes in the light theme](docs/images/plugin-light-theme.png)
 
 ## Development
 
-The project is written in Kotlin and uses the IntelliJ Platform Gradle Plugin. It currently targets IntelliJ IDEA `2025.3.5`.
-
-### Build
-
-Run the Gradle wrapper from the project root:
+Built with Kotlin and the IntelliJ Platform Gradle Plugin, targeting IntelliJ IDEA `2025.3.5`.
 
 ```powershell
-.\gradlew.bat buildPlugin
+.\gradlew.bat buildPlugin  # Build the installable ZIP in build/distributions
+.\gradlew.bat runIde       # Run in a sandbox IDE
 ```
 
-The installable ZIP is generated in `build/distributions`.
-
-### Run in a sandbox IDE
-
-```powershell
-.\gradlew.bat runIde
-```
-
-This starts a separate IntelliJ IDEA instance with Global Notes installed for testing.
-
-## Project layout
-
-```
-src/main/kotlin/com/spavlov/globalnotes/
-  NotesService.kt             Persisted note storage and note-management logic
-  NotesToolWindowFactory.kt   Global Notes tool-window interface
-src/main/resources/META-INF/
-  plugin.xml                  Plugin metadata and tool-window registration
-  pluginIcon.svg             Plugin Manager logo for light themes
-  pluginIcon_dark.svg        Plugin Manager logo for dark themes
-```
-
-## License
-
-Global Notes is available under the [Apache License 2.0](LICENSE).
+See the [changelog](CHANGELOG.md) for release details. Licensed under [Apache 2.0](LICENSE).

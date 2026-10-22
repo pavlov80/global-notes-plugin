@@ -11,7 +11,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextArea
@@ -19,9 +18,10 @@ import com.intellij.ui.content.ContentFactory
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
 import java.awt.BorderLayout
-import java.awt.Color
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.EventQueue
+import java.awt.Font
 import java.awt.event.ActionEvent
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
@@ -114,26 +114,44 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
         val selectedNoteLabel = JBLabel().apply {
             border = BorderFactory.createEmptyBorder(0, 8, 0, 4)
         }
-        val notesButton = JButton(AllIcons.General.ChevronDown).apply {
-            toolTipText = "Choose, add, rename, or delete a note"
-            margin = JBUI.insets(6)
+        val searchBar = NoteSearchBar(textArea)
+        val searchButton = JButton(AllIcons.Actions.Find).apply {
+            toolTipText = "Show or hide search in current note"
+            accessibleContext.accessibleName = "Show or hide search in current note"
+            margin = JBUI.insets(4)
             isContentAreaFilled = false
             isFocusPainted = false
             isOpaque = false
-            preferredSize = JBUI.size(36, 32)
-            minimumSize = JBUI.size(36, 32)
-            maximumSize = JBUI.size(36, 32)
+            addActionListener { searchBar.toggle() }
+        }
+        val notesButton = JButton(AllIcons.General.ChevronDown).apply {
+            toolTipText = "Choose, add, rename, or delete a note"
+            margin = JBUI.insets(4)
+            isContentAreaFilled = false
+            isFocusPainted = false
+            isOpaque = false
         }
         val header = JPanel(BorderLayout()).apply {
             add(selectedNoteLabel, BorderLayout.CENTER)
-            add(notesButton, BorderLayout.EAST)
+            add(JPanel(BorderLayout()).apply {
+                isOpaque = false
+                add(searchButton, BorderLayout.WEST)
+                add(notesButton, BorderLayout.EAST)
+            }, BorderLayout.EAST)
             border = JBUI.Borders.empty(4, 0, 4, 8)
         }
 
         fun updateHeaderAppearance() {
-            val isDarkTheme = !JBColor.isBright()
-            selectedNoteLabel.foreground = if (isDarkTheme) Color(180, 224, 189) else Color(36, 88, 49)
-            header.background = UIUtil.getTreeBackground()
+            val buttonSize = Dimension(searchBar.navigationButtonWidth, JBUI.scale(30))
+            listOf(searchButton, notesButton).forEach { button ->
+                button.preferredSize = buttonSize
+                button.minimumSize = buttonSize
+                button.maximumSize = buttonSize
+            }
+            selectedNoteLabel.foreground = UIUtil.getLabelForeground()
+            selectedNoteLabel.font = UIUtil.getLabelFont().deriveFont(Font.BOLD)
+            header.background = UIUtil.getPanelBackground()
+            header.revalidate()
             header.repaint()
         }
 
@@ -290,10 +308,14 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
             add(JSeparator(), BorderLayout.SOUTH)
         }
         val panel = JPanel(BorderLayout()).apply {
-            add(headerWithSeparator, BorderLayout.NORTH)
+            add(JPanel(BorderLayout()).apply {
+                add(headerWithSeparator, BorderLayout.NORTH)
+                add(searchBar, BorderLayout.CENTER)
+            }, BorderLayout.NORTH)
             add(scrollPane, BorderLayout.CENTER)
             background = UIUtil.getTreeBackground()
         }
+        searchBar.installShortcuts(panel)
 
         val content = ContentFactory.getInstance().createContent(panel, "", false).apply {
             preferredFocusableComponent = textArea
