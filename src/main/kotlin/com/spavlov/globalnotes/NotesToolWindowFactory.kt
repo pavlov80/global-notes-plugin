@@ -22,6 +22,7 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.EventQueue
 import java.awt.Font
+import java.awt.Rectangle
 import java.awt.event.ActionEvent
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
@@ -177,6 +178,8 @@ class NotesToolWindowFactory : ToolWindowFactory, DumbAware {
         fun refreshEditor() {
             updatingEditor = true
             textArea.text = notesService.text
+            textArea.caretPosition = 0
+            textArea.scrollRectToVisible(Rectangle(0, 0, 1, 1))
             updatingEditor = false
             selectedNoteLabel.text = notesService.selectedNote.name
         }

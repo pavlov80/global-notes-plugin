@@ -1,5 +1,11 @@
 # Global Notes Changelog
 
+## [1.1.1] - 2026-10-28
+
+### Fixed
+
+- Show the beginning of a note when opening or switching notes instead of scrolling to the bottom.
+
 ## [1.1.0] - 2026-10-22
 
 ### Added
